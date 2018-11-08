@@ -1,6 +1,7 @@
 import json
 import logging
 import asyncio
+import re
 from random import randint
 
 _LOGGER = logging.getLogger(__name__)
@@ -107,7 +108,10 @@ class SomfyMyLinkSynergy:
             else:
                 reader = self._stream_reader.read(1024)
             data_bytes = await asyncio.wait_for(reader, timeout=self._timeout)
-            data_dict = json.loads(data_bytes.decode('utf-8'))
+            data_text = data_bytes.decode('utf-8')
+            if "keepalive" in data_text:
+                data_text = re.sub('({[a-zA-Z.\":]*keepalive.*?})', '', data_text)
+            data_dict = json.loads(data_text)
             return data_dict
         except asyncio.TimeoutError as timeout_err:
             _LOGGER.error('Recieved timeout whilst waiting for'
