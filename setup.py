@@ -9,7 +9,7 @@ with open('README.md') as f:
 
 setup(
     name='somfy_mylink_synergy',
-    version='1.0.1',
+    version='1.0.3',
     url='http://github.com/bendews/somfy-mylink-synergy',
     license='MIT',
     author='Ben Dews',
