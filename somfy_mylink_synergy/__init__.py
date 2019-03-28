@@ -74,9 +74,10 @@ class SomfyMyLinkSynergy:
     async def _make_connection(self):
         """Open asyncio socket connection with MyLink device."""
         if self._stream_writer:
-            _LOGGER.debug('Reusing existing socket connection to %s on %s',
-                          self.host, self.port)
-            return
+            if not self._stream_writer.is_closing():
+                _LOGGER.debug('Reusing existing socket connection to %s on %s',
+                            self.host, self.port)
+                return
         _LOGGER.debug('Opening new socket connection to %s on %s',
                       self.host, self.port)
         conn = asyncio.open_connection(self.host, self.port)
@@ -95,9 +96,15 @@ class SomfyMyLinkSynergy:
         try:
             data_as_bytes = str.encode(json.dumps(data))
             self._stream_writer.write(data_as_bytes)
+            await self._stream_writer.drain()
         except TypeError as data_error:
             _LOGGER.error('Invalid data sent to device')
             raise data_error
+
+    async def _close_socket(self):
+        """Close Socket connection."""
+        self._stream_writer.close()
+        await self._stream_writer.wait_closed()
 
     async def _recieve_data(self, read_until=None):
         """Recieve Data from MyLink using JsonRPC via Socket."""
@@ -123,3 +130,5 @@ class SomfyMyLinkSynergy:
         except json.decoder.JSONDecodeError as json_error:
             _LOGGER.error('Could not decode JSON: %s', data_bytes)
             raise json_error
+        finally:
+            await self._close_socket()
