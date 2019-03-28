@@ -18,6 +18,8 @@ class SomfyMyLinkSynergy:
         self._timeout = timeout
         self._stream_reader = None
         self._stream_writer = None
+        self._stream_ready = asyncio.Event()
+        self._stream_ready.set()
 
     async def scene_list(self):
         """List all Somfy scenes."""
@@ -73,11 +75,9 @@ class SomfyMyLinkSynergy:
 
     async def _make_connection(self):
         """Open asyncio socket connection with MyLink device."""
-        if self._stream_writer:
-            if not self._stream_writer.is_closing():
-                _LOGGER.debug('Reusing existing socket connection to %s on %s',
-                            self.host, self.port)
-                return
+        # Wait for stream to be ready
+        await self._stream_ready.wait()
+        self._stream_ready.clear()
         _LOGGER.debug('Opening new socket connection to %s on %s',
                       self.host, self.port)
         conn = asyncio.open_connection(self.host, self.port)
@@ -105,10 +105,11 @@ class SomfyMyLinkSynergy:
         """Close Socket connection."""
         self._stream_writer.close()
         await self._stream_writer.wait_closed()
+        # Mark stream as ready
+        self._stream_ready.set()
 
     async def _recieve_data(self, read_until=None):
         """Recieve Data from MyLink using JsonRPC via Socket."""
-        await self._make_connection()
         try:
             if read_until:
                 reader = self._stream_reader.readuntil(read_until)
