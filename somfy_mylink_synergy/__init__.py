@@ -104,7 +104,7 @@ class SomfyMyLinkSynergy:
     async def _close_socket(self):
         """Close Socket connection."""
         self._stream_writer.close()
-        await self._stream_writer.wait_closed()
+        await asyncio.sleep(0)
         # Mark stream as ready
         self._stream_ready.set()
 

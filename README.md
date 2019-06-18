@@ -6,7 +6,7 @@ Python API to utilise the Somfy Synergy API utilising JsonRPC.
 
 ## Requirements
 
-- Python >= 3.4
+- Python >= 3.5.2
 
 ## Usage
 ```python
@@ -18,26 +18,26 @@ loop = asyncio.get_event_loop()
 mylink = SomfyMyLinkSynergy('YourSystemID', '10.1.1.50')
 
 
-mylink_status = loop.run_until_complete(mylink.status_info())
-for device in mylink_status['result']:
+mylink_covers = loop.run_until_complete(mylink.status_info())
+for device in mylink_covers['result']:
     print(device['targetID'], device['name'])
 
-> ('CC0000A.1', 'Bedroom Cover')
-> ('CC0000A.2', 'Kitchen Cover')
+# ('CC0000A.1', 'Bedroom Cover')
+# ('CC0000A.2', 'Kitchen Cover')
 
-mylink_status = loop.run_until_complete(mylink.scene_list())
-for scene in mylink_status['result']:
-    print(device['targetID'], device['name'])
+mylink_scenes = loop.run_until_complete(mylink.scene_list())
+for scene in mylink_scenes['result']:
+    print(scene['sceneID'], scene['name'])
 
-> ('123456789', 'Morning')
-> ('987654321', 'Evening')
+# ('123456789', 'Morning')
+# ('987654321', 'Evening')
 
-mylink_ping= loop.run_until_complete(mylink.status_ping())
-for device in mylink_status['result']:
+mylink_ping = loop.run_until_complete(mylink.status_ping())
+for device in mylink_ping['result']:
     print(device)
 
-> ('CC0000A.1')
-> ('CC0000A.2')
+# ('CC0000A.1')
+# ('CC0000A.2')
 
 open_cover = loop.run_until_complete(mylink.move_up('CC0000A.1'))
 close_cover = loop.run_until_complete(mylink.move_down('CC0000A.1'))
