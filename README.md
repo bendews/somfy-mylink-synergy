@@ -6,7 +6,7 @@ Python API to utilise the Somfy Synergy API utilising JsonRPC.
 
 ## Requirements
 
-- Python >= 3.4
+- Python >= 3.5.2
 
 ## Usage
 ```python
