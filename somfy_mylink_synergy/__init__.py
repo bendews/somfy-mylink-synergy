@@ -88,7 +88,7 @@ class SomfyMyLinkSynergy:
             _LOGGER.error('Connection failed for %s on %s. '
                           'Please ensure device is reachable.',
                           self.host, self.port)
-            # Allow for subsequent request attempts in case the network
+            # Allow for subsequent connection attempts in case the network
             # condition changes.
             self._stream_ready.set()
             raise timeout_err
